@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Kj8\DPD\Service;
+
+use Kj8\DPD\DpdHttpClient;
+use Kj8\DPD\DTO\Package;
+
+final class ShipmentService
+{
+    public function __construct(private readonly DpdHttpClient $client)
+    {
+    }
+
+    /**
+     * @param Package[] $packages
+     */
+    public function generatePackages(array $packages): array
+    {
+        $payload = [
+            'generationPolicy' => 'STOP_ON_FIRST_ERROR',
+            'packages' => array_map(
+                fn (Package $p) => $p->toArray(),
+                $packages
+            ),
+        ];
+
+        return $this->client->post(
+            '/public/shipment/v1/generatePackagesNumbers',
+            $payload
+        );
+    }
+}
