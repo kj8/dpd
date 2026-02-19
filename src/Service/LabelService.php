@@ -12,16 +12,46 @@ final class LabelService
     {
     }
 
-    public function generateBySession(
-        int $sessionId,
+    public function generateSingle(
+        string $waybill,
         string $format = 'A4',
         string $docFormat = 'PDF',
-    ): string {
+    ): string
+    {
+        return $this->generateMultiple([$waybill], $format, $docFormat);
+    }
+
+    /**
+     * @param array $structure
+     */
+    public function generateMultiple(
+        array $structure,
+        string $format = 'A4',
+        string $docFormat = 'PDF',
+    ): string
+    {
+        $packages = [];
+        foreach ($structure as $_package) {
+            $parcels = [];
+            foreach ($_package['parcels'] as $_parcel) {
+                $parcel = [
+                    'reference' => $_parcel['reference'],
+                    'waybill' => $_parcel['waybill'],
+                ];
+                $parcels[] = $parcel;
+            }
+            $package = [
+                'reference' => $_package['reference'],
+                'parcels' => $parcels,
+            ];
+            $packages[] = $package;
+        }
+
         $payload = [
             'labelSearchParams' => [
-                'policy' => 'STOP_ON_FIRST_ERROR',
+                'policy' => 'IGNORE_ERRORS',
                 'session' => [
-                    'sessionId' => $sessionId,
+                    'packages' => $packages,
                     'type' => 'DOMESTIC',
                 ],
             ],
@@ -36,6 +66,6 @@ final class LabelService
             $payload
         );
 
-        return base64_decode((string) $response['documentData']);
+        return base64_decode((string)$response['documentData']);
     }
 }

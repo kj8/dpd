@@ -19,9 +19,9 @@ final class ShipmentService
     public function generatePackages(array $packages): array
     {
         $payload = [
-            'generationPolicy' => 'STOP_ON_FIRST_ERROR',
+            'generationPolicy' => 'ALL_OR_NOTHING',
             'packages' => array_map(
-                fn (Package $p) => $p->toArray(),
+                fn(Package $p) => $p->toArray(),
                 $packages
             ),
         ];

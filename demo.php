@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-include __DIR__.'/vendor/autoload.php';
+include __DIR__ . '/vendor/autoload.php';
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
@@ -51,16 +51,28 @@ $receiver = new Address(
     'b@b.pl'
 );
 
-$packageReference = 'ORDER-5';
-$parcelReference = 'PARCEL-5';
+$packageReference1 = 'ORDER_1-' . uniqid();
+$parcelReference1 = 'PARCEL_1-' . uniqid();
+$parcelReference2 = 'PARCEL_2-' . uniqid();
 
-$package = new Package($packageReference, $sender, $receiver, 1495);
-$package->addParcel(new Parcel($parcelReference, 10, 10, 10, 10));
+$packageReference2 = 'ORDER_2-' . uniqid();
+$parcelReference3 = 'PARCEL_3-' . uniqid();
+$parcelReference4 = 'PARCEL_4-' . uniqid();
 
-$response = $shipmentService->generatePackages([$package]);
+$package1 = new Package($packageReference1, $sender, $receiver, 1495);
+$package1->addParcel(new Parcel($parcelReference1, 10, 10, 10, 10));
+$package1->addParcel(new Parcel($parcelReference2, 10, 10, 10, 10));
 
-$sessionId = $response['sessionId'];
+$package2 = new Package($packageReference2, $sender, $receiver, 1495);
+$package2->addParcel(new Parcel($parcelReference3, 10, 10, 10, 10));
+$package2->addParcel(new Parcel($parcelReference4, 10, 10, 10, 10));
 
-$pdfBinary = $labelService->generateBySession($sessionId);
+$response = $shipmentService->generatePackages([$package1, $package2]);
 
-file_put_contents('etykieta_'.uniqid('', true).'.pdf', $pdfBinary);
+file_put_contents(__DIR__ . '/response.json', json_encode($response, JSON_PRETTY_PRINT));
+
+$packages = [];
+
+$pdfBinary = $labelService->generateMultiple($response['packages']);
+
+file_put_contents(__DIR__ . '/etykiety_' . uniqid('', true) . '.pdf', $pdfBinary);
