@@ -29,12 +29,12 @@ final class ProtocolService
         array $packages,
     ): string {
         $payload = [
-            'labelSearchParams' => [
+            'protocolSearchParams' => [
                 'policy' => 'IGNORE_ERRORS',
                 'session' => [
                     'type' => 'DOMESTIC',
                     'packages' => array_map(
-                        static fn ($package) => $package->toArray(),
+                        static fn (PackageRequest $package) => $package->toArray(),
                         $packages
                     ),
                 ],

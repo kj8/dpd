@@ -31,7 +31,7 @@ final class LabelService
                 'session' => [
                     'type' => 'DOMESTIC',
                     'packages' => array_map(
-                        static fn ($package) => $package->toArray(),
+                        static fn (PackageRequest $package) => $package->toArray(),
                         $packages
                     ),
                 ],
