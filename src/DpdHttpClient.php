@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kj8\DPD;
 
 use Kj8\DPD\Exception\DpdException;
+use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -18,6 +19,14 @@ final class DpdHttpClient
     ) {
     }
 
+    /**
+     * @param array<string, mixed> $payload
+     *
+     * @return array<string, mixed>
+     *
+     * @throws ClientExceptionInterface
+     * @throws \JsonException
+     */
     public function post(string $uri, array $payload): array
     {
         $request = $this->requestFactory
@@ -39,6 +48,14 @@ final class DpdHttpClient
         return $this->handleResponse($response);
     }
 
+    /**
+     * @param array<string, mixed> $query
+     *
+     * @return array<string, mixed>
+     *
+     * @throws ClientExceptionInterface
+     * @throws \JsonException
+     */
     public function get(string $uri, array $query = []): array
     {
         $queryString = http_build_query($query);
@@ -60,6 +77,11 @@ final class DpdHttpClient
         return $this->handleResponse($response);
     }
 
+    /**
+     * @return array<string, mixed>
+     *
+     * @throws \JsonException
+     */
     private function handleResponse(ResponseInterface $response): array
     {
         $body = (string) $response->getBody();

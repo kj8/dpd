@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Kj8\DPD\Exception;
 
-class DpdException extends \RuntimeException
+class ParcelException extends DpdException
 {
 }

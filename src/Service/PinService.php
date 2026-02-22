@@ -8,7 +8,7 @@ use Kj8\DPD\DpdHttpClient;
 use Kj8\DPD\DTO\PackageRequest;
 use Kj8\DPD\DTO\ParcelRequest;
 
-final class ProtocolService
+final class PinService
 {
     public function __construct(private readonly DpdHttpClient $client)
     {
@@ -27,6 +27,7 @@ final class ProtocolService
      */
     public function generateMultiple(
         array $packages,
+        int $validityPeriod = 14,
     ): string {
         $payload = [
             'labelSearchParams' => [
@@ -38,15 +39,12 @@ final class ProtocolService
                         $packages
                     ),
                 ],
+                'validityPeriod' => $validityPeriod,
             ],
-            'outputDocFormat' => 'PDF',
-            'format' => 'A4',
-            'outputType' => 'BIC3',
-            'variant' => 'STANDARD',
         ];
 
         $response = $this->client->post(
-            '/public/shipment/v1/generateProtocol',
+            '/public/shipment/v1/generateDropOffPin',
             $payload
         );
 

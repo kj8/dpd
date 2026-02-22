@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kj8\DPD\Service;
 
 use Kj8\DPD\DpdHttpClient;
+use Kj8\DPD\DTO\PackageRequest;
 
 final class LabelService
 {
@@ -13,50 +14,30 @@ final class LabelService
     }
 
     public function generateSingle(
-        string $waybill,
-        string $format = 'A4',
-        string $docFormat = 'PDF',
-    ): string
-    {
-        return $this->generateMultiple([$waybill], $format, $docFormat);
+        PackageRequest $package,
+    ): string {
+        return $this->generateMultiple([$package]);
     }
 
     /**
-     * @param array $structure
+     * @param PackageRequest[] $packages
      */
     public function generateMultiple(
-        array $structure,
-        string $format = 'A4',
-        string $docFormat = 'PDF',
-    ): string
-    {
-        $packages = [];
-        foreach ($structure as $_package) {
-            $parcels = [];
-            foreach ($_package['parcels'] as $_parcel) {
-                $parcel = [
-                    'reference' => $_parcel['reference'],
-                    'waybill' => $_parcel['waybill'],
-                ];
-                $parcels[] = $parcel;
-            }
-            $package = [
-                'reference' => $_package['reference'],
-                'parcels' => $parcels,
-            ];
-            $packages[] = $package;
-        }
-
+        array $packages,
+    ): string {
         $payload = [
             'labelSearchParams' => [
                 'policy' => 'IGNORE_ERRORS',
                 'session' => [
-                    'packages' => $packages,
                     'type' => 'DOMESTIC',
+                    'packages' => array_map(
+                        static fn ($package) => $package->toArray(),
+                        $packages
+                    ),
                 ],
             ],
-            'outputDocFormat' => $docFormat,
-            'format' => $format,
+            'outputDocFormat' => 'PDF',
+            'format' => 'A4',
             'outputType' => 'BIC3',
             'variant' => 'STANDARD',
         ];
@@ -66,6 +47,6 @@ final class LabelService
             $payload
         );
 
-        return base64_decode((string)$response['documentData']);
+        return base64_decode((string) $response['documentData']);
     }
 }

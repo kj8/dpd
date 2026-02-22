@@ -15,13 +15,15 @@ final class ShipmentService
 
     /**
      * @param Package[] $packages
+     *
+     * @return array<string, mixed>
      */
     public function generatePackages(array $packages): array
     {
         $payload = [
             'generationPolicy' => 'ALL_OR_NOTHING',
             'packages' => array_map(
-                fn(Package $p) => $p->toArray(),
+                static fn (Package $p) => $p->toArray(),
                 $packages
             ),
         ];

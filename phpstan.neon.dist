@@ -5,5 +5,4 @@ parameters:
         minimumNumberOfJobsPerProcess: 2
     paths:
         - src
-#        - tests
-    level: 9
+    level: 8
