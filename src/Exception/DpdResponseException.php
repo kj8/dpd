@@ -23,6 +23,6 @@ class DpdResponseException extends DpdException
 
     public function getBody(): string
     {
-        return $this->body;
+        return json_decode($this->body, true, 512, \JSON_THROW_ON_ERROR);
     }
 }
