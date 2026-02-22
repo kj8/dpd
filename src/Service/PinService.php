@@ -35,7 +35,7 @@ final class PinService
                 'session' => [
                     'type' => 'DOMESTIC',
                     'packages' => array_map(
-                        static fn (ParcelRequest $package) => $package->toArray(),
+                        static fn (PackageRequest $package) => $package->toArray(),
                         $packages
                     ),
                 ],

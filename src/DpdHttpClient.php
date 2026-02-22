@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Kj8\DPD;
 
-use Kj8\DPD\Exception\DpdException;
+use Kj8\DPD\Exception\DpdResponseException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -87,7 +87,7 @@ final class DpdHttpClient
         $body = (string) $response->getBody();
 
         if ($response->getStatusCode() >= 400) {
-            throw new DpdException(\sprintf('DPD API error (%d): %s', $response->getStatusCode(), $body));
+            throw DpdResponseException::create(statusCode: $response->getStatusCode(), body: $body, message: \sprintf('DPD API error (%d): %s', $response->getStatusCode(), $response->getReasonPhrase()));
         }
 
         return json_decode($body, true, 512, \JSON_THROW_ON_ERROR);
