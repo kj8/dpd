@@ -15,7 +15,7 @@ final class LabelService
 
     public function generateSingle(
         PackageRequest $package,
-    ): string {
+    ): array {
         return $this->generateMultiple([$package]);
     }
 
@@ -24,7 +24,7 @@ final class LabelService
      */
     public function generateMultiple(
         array $packages,
-    ): string {
+    ): array {
         $payload = [
             'labelSearchParams' => [
                 'policy' => 'IGNORE_ERRORS',
@@ -42,11 +42,11 @@ final class LabelService
             'variant' => 'STANDARD',
         ];
 
-        $response = $this->client->post(
+        return $this->client->post(
             '/public/shipment/v1/generateSpedLabels',
             $payload
         );
 
-        return base64_decode((string) $response['documentData']);
+        // return base64_decode((string) $response['documentData']);
     }
 }
