@@ -16,7 +16,7 @@ final class ProtocolService
 
     public function generateByWaybill(
         string $waybill,
-    ): string {
+    ): array {
         $package = (new PackageRequest())->addParcel(new ParcelRequest($waybill));
 
         return $this->generateMultiple([$package]);
@@ -27,7 +27,7 @@ final class ProtocolService
      */
     public function generateMultiple(
         array $packages,
-    ): string {
+    ): array {
         $payload = [
             'protocolSearchParams' => [
                 'policy' => 'IGNORE_ERRORS',
@@ -45,11 +45,11 @@ final class ProtocolService
             'variant' => 'STANDARD',
         ];
 
-        $response = $this->client->post(
+        return $this->client->post(
             '/public/shipment/v1/generateProtocol',
             $payload
         );
 
-        return base64_decode((string) $response['documentData']);
+        // return base64_decode((string) $response['documentData']);
     }
 }
