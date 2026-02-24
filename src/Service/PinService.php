@@ -30,7 +30,7 @@ final class PinService
         int $validityPeriod = 14,
     ): array {
         $payload = [
-            'labelSearchParams' => [
+            'pinSearchParams' => [
                 'policy' => 'IGNORE_ERRORS',
                 'session' => [
                     'type' => 'DOMESTIC',
