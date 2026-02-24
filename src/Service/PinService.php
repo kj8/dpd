@@ -16,7 +16,7 @@ final class PinService
 
     public function generateByWaybill(
         string $waybill,
-    ): string {
+    ): array {
         $package = (new PackageRequest())->addParcel(new ParcelRequest($waybill));
 
         return $this->generateMultiple([$package]);
@@ -28,7 +28,7 @@ final class PinService
     public function generateMultiple(
         array $packages,
         int $validityPeriod = 14,
-    ): string {
+    ): array {
         $payload = [
             'labelSearchParams' => [
                 'policy' => 'IGNORE_ERRORS',
@@ -43,11 +43,11 @@ final class PinService
             ],
         ];
 
-        $response = $this->client->post(
+        return $this->client->post(
             '/public/shipment/v1/generateDropOffPin',
             $payload
         );
 
-        return base64_decode((string) $response['documentData']);
+        // return base64_decode((string) $response['documentData']);
     }
 }
