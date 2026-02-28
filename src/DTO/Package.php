@@ -13,11 +13,15 @@ final class Package
     /** @var Parcel[] */
     private array $parcels = [];
 
+    /**
+     * @param ServiceAttributeDTO[] $services
+     */
     public function __construct(
         private readonly Address $sender,
         private readonly Address $receiver,
         private readonly int $payerFID,
         private readonly ?string $reference = null,
+        private readonly array $services = [],
     ) {
     }
 
@@ -47,6 +51,7 @@ final class Package
                 static fn (Parcel $p) => $p->toArray(),
                 $this->parcels
             ),
+            'services' => array_map(static fn (ServiceAttributeDTO $s) => $s->toArray(), $this->services),
         ];
 
         if (null !== $this->reference) {

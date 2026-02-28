@@ -9,6 +9,7 @@ use GuzzleHttp\Psr7\HttpFactory;
 use Kj8\DPD\DpdConfig;
 use Kj8\DPD\DpdHttpClient;
 use Kj8\DPD\DTO\Address;
+use Kj8\DPD\DTO\DpdServiceCode;
 use Kj8\DPD\DTO\Package;
 use Kj8\DPD\DTO\PackageRequest;
 use Kj8\DPD\DTO\Parcel;
@@ -63,11 +64,11 @@ $packageReference2 = 'ORDER_2-'.uniqid();
 $parcelReference3 = 'PARCEL_3-'.uniqid();
 $parcelReference4 = 'PARCEL_4-'.uniqid();
 
-$package1 = (new Package($sender, $receiver, 1495, $packageReference1))
+$package1 = (new Package($sender, $receiver, 1495, $packageReference1, [new \Kj8\DPD\DTO\ServiceAttributeDTO(DPDServiceCode::HAND_DELIVERY)]))
     ->addParcel(new Parcel(1, $parcelReference1))
     ->addParcel(new Parcel(1, $parcelReference2));
 
-$package2 = (new Package($sender, $receiver, 1495, $packageReference2))
+$package2 = (new Package($sender, $receiver, 1495, $packageReference2, [new \Kj8\DPD\DTO\ServiceAttributeDTO(DPDServiceCode::HAND_DELIVERY)]))
     ->addParcel(new Parcel(1, $parcelReference3))
     ->addParcel(new Parcel(1, $parcelReference4));
 
@@ -83,10 +84,12 @@ $packageRequest2 = (new PackageRequest())
     ->addParcel(new ParcelRequest($response['packages'][1]['parcels'][0]['waybill']))
     ->addParcel(new ParcelRequest($response['packages'][1]['parcels'][1]['waybill']));
 
-$labels = $labelService->generateMultiple([$packageRequest1, $packageRequest2]);
+$response = $labelService->generateMultiple([$packageRequest1, $packageRequest2]);
+$labels = base64_decode((string) $response['documentData']);
 
 file_put_contents(__DIR__.'/etykiety_'.time().'.pdf', $labels);
 
-$protocols = $protocolService->generateMultiple([$packageRequest1, $packageRequest2]);
+$response = $protocolService->generateMultiple([$packageRequest1, $packageRequest2]);
+$protocols = base64_decode((string) $response['documentData']);
 
 file_put_contents(__DIR__.'/protocols_'.time().'.pdf', $protocols);
